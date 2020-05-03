@@ -9,7 +9,7 @@ from audio_neural_network import create_baseline_regression
 features = ['Duration', 'Key', 'Mode', 'Time Signature', 'Acousticness', 'Danceability', 
                         'Energy', 'Instrumentalness', 'Liveness', 'Loudness', 'Speechiness', 'Valence', 'Tempo']
 maxis = [300000, 11, 1, 5, 1, 1, 1, 1, 1, 0, 1, 1, 250]
-minis = [0, -1, 0, 0, 0, 0, 0, 0, 0, -30.0, 0, 0, 0]
+minis = [5000, 0, 0, 0, 0, 0, 0, 0, 0, -30.0, 0, 0, 0]
 
 pygame.init()
 
@@ -31,7 +31,7 @@ MAGENTA = (255, 0, 255)
 TRANS = (1, 1, 1)
 
 predict_gender = True
-changed_numbers = True
+change_outcome = True
 initialized = False
 model = ann.unpickle_gender()
 
@@ -45,15 +45,15 @@ def ms_secs(num):
 def show_text(f):
     font = pygame.font.SysFont("Verdana", 30)
     height = 40
-    global changed_numbers
+    global change_outcome
     global model
     if initialized:
-        if predict_gender and changed_numbers:
+        if predict_gender and change_outcome:
             model = ann.unpickle_gender()
-            changed_numbers = False
-        elif changed_numbers:
+            change_outcome = False
+        elif change_outcome:
             model = ann.unpickle_pop()
-            changed_numbers = False
+            change_outcome = False
         outcome = ann.predict(f, model)
     else:
         outcome = "NaN"
@@ -123,14 +123,12 @@ class Button():
 
 def change_outcome():
     global predict_gender
-    global changed_numbers
+    global change_outcome
     predict_gender = not predict_gender
-    changed_numbers = True
+    change_outcome = True
 
 def initialize_training():
     global initialized
-    global changed_numbers
-    changed_numbers = True
     initialized = True
 
 def mousebuttondown():
@@ -224,8 +222,13 @@ y_pos = 0
 song_features = []
 
 for i in range(len(features)):
-    song_features.append(maxis[i]/2)
-    slides.append(Slider(i, maxis[i]/2, maxis[i], minis[i], y_pos))
+    
+    if i == 1 or i ==2 or i ==3:
+        song_features.append(round(maxis[i]/2))
+        slides.append(Slider(i, round(maxis[i]/2), maxis[i], minis[i], y_pos))
+    else:
+        song_features.append(maxis[i]/2)
+        slides.append(Slider(i, maxis[i]/2, maxis[i], minis[i], y_pos))
     y_pos += 50
 
 outcome_button = Button("Change outcome", (137, 379), change_outcome)
@@ -252,7 +255,6 @@ while True:
     # Move slides
     for s in slides:
         if s.hit:
-            changed_numbers = True
             s.move()
     
     # Update screen

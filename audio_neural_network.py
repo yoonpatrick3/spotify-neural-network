@@ -217,12 +217,43 @@ x2, y2 = get_data_by_popularity()
 
 artists = get_data()
 
+durationMM = [5000, 299880.0]
+keyMM = [0, 11]
+modeMM = [0, 1]
+time_sigMM = [0, 5]
+acousticnessMM = [0, 0.995]
+danceabilityMM = [0.0, 0.954]
+energyMM = [0.0116, 0.999]
+instrumentalnessMM = [0.0, 0.989]
+livenessMM = [0.0, 0.987]
+loudnessMM = [-29.375, -0.005]
+speechinessMM = [0.0, 0.955]
+valenceMM = [0.0, 0.978]
+tempoMM = [0.0, 248.052]
+mm = [durationMM, keyMM, modeMM, time_sigMM, acousticnessMM, danceabilityMM, energyMM, instrumentalnessMM, livenessMM,
+        loudnessMM, speechinessMM, valenceMM, tempoMM]
+
+def normalize(x, mm):
+    z = (x-mm[0])/(mm[1] - mm[0])
+    return z
+
+def normalized_data(artists):
+    newArtist = []
+    for artist in artists:
+        row = []
+        for i in range(len(mm)):
+            row.append(normalize(artist[i+2], mm[i]))
+        newArtist.append(row)
+    return newArtist
+
+normalized_artists = normalized_data(artists)
+
 def sounds_closest_to(f):
     least_squares = []
-    for artist in artists:
+    for artist in normalized_artists:
         ls = 0
         for i in range(len(f)):
-            ls += (f[i]-artist[i+2])**2
+            ls += (normalize(f[i], mm[i]) - artist[i])**2
         least_squares.append(ls)
     indexOfMin = least_squares.index(min(least_squares))
     text = artists[indexOfMin][0] + " - " + artists[indexOfMin][1]
@@ -250,7 +281,7 @@ def create_baseline_regression():
 def start_nn_gender():
     estimators = []
     estimators.append(('standardize', StandardScaler()))
-    model = KerasClassifier(build_fn=create_baseline_gender, epochs=100, batch_size=5, verbose=0)
+    model = KerasClassifier(build_fn=create_baseline_gender, epochs=100, batch_size=5, verbose=1)
     estimators.append(('mlp', model))
     pipeline = Pipeline(estimators)
     return pipeline
