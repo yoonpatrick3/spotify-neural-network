@@ -22,8 +22,8 @@ from sklearn.model_selection import KFold
 
 os.chdir("C:\\Users\\12244\\yoonp\\independentCS\\spotipy")
 
-os.environ['SPOTIPY_CLIENT_ID'] = '4e2ba88cc79247a8acc4160d1510764f'
-os.environ['SPOTIPY_CLIENT_SECRET'] = '1698c2d495ed4d6fba3967974ced8423'
+os.environ['SPOTIPY_CLIENT_ID'] = 'SPOTIPY_CLIENT_ID'
+os.environ['SPOTIPY_CLIENT_SECRET'] = 'SPOTIPY_CLIENT_SECRET'
 
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
